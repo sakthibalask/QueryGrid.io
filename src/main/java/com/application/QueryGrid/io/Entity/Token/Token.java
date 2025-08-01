@@ -1,0 +1,33 @@
+package com.application.QueryGrid.io.Entity.Token;
+
+import com.application.QueryGrid.io.Entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@Table(name = "tokens")
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Token {
+    @Id
+    @GeneratedValue
+    private Integer id;
+    private String token;
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
+
+    private boolean expired;
+    private boolean revoked;
+
+    @ManyToOne
+    @JoinColumn(name = "user_email")
+    @JsonIgnore
+    private User userInfo;
+
+}
