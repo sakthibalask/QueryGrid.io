@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    final long jwtExpiration = Constants.REFRESH_TOKEN_EXPIRTATION;
+    final long jwtExpiration = Constants.ACCESS_TOKEN_EXPIRTATION;
 
     public String extractUserEmail(String token) {
         return extractClaim(token, Claims::getSubject);
