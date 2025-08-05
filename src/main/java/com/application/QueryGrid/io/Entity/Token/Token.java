@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @Table(name = "tokens")
@@ -24,6 +26,8 @@ public class Token {
 
     private boolean expired;
     private boolean revoked;
+
+    private Date createdDate;
 
     @ManyToOne
     @JoinColumn(name = "user_email")

@@ -13,6 +13,8 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
     """)
     List<Token> findAllValidTokensByUser(String useremail);
 
+    Optional<Token> findByToken(String token);
+
     @Query("""
         SELECT t FROM Token t 
         WHERE t.userInfo.email = :useremail  
@@ -20,4 +22,7 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
         AND t.revoked = false
     """)
     Optional<Token> findByUser(String useremail);
+
+
+
 }

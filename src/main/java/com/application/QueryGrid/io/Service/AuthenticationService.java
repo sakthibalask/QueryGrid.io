@@ -16,6 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -35,6 +40,10 @@ public class AuthenticationService {
                 .isActive(true)
                 .role(Role.SUPERUSER)
                 .build();
+        if (userRepository.existsById(user.getEmail())){
+            var response = "User exists already";
+            return UserCreationResponse.builder().message(response).build();
+        }
         userRepository.save(user);
         var response = "User Created Successfully";
         return UserCreationResponse.builder().message(response).build();
@@ -69,6 +78,7 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserToken);
     }
 
+
     private void savedUserToken(User savedUser, String userToken){
         var token = Token.builder()
                 .userInfo(savedUser)
@@ -76,7 +86,24 @@ public class AuthenticationService {
                 .tokenType(TokenType.BEARER)
                 .revoked(false)
                 .expired(false)
+                .createdDate(Date.from(
+                        LocalDateTime.now()
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant()
+                ))
                 .build();
         tokenRepository.save(token);
+    }
+
+    public String logoutUser(Principal connectedUser){
+        var user = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal()).getEmail();
+        var viewToken = tokenRepository.findByUser(user).orElse(null);
+        if(viewToken != null) {
+            viewToken.setExpired(true);
+            viewToken.setRevoked(true);
+            tokenRepository.save(viewToken);
+
+        }
+        return "Logged out Successfully";
     }
 }
