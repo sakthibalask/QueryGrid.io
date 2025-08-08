@@ -27,10 +27,17 @@ public class SecurityConfiguration {
                         .requestMatchers("/app/v1/users/**").hasAnyRole(
                                 Role.ADMINISTRATOR.name(),
                                 Role.SUPERUSER.name(),
-                                Role.COORDINATOR.name(),
                                 Role.USER.name()
                         )
-                        .requestMatchers("/app/v1/superusers/**").hasAnyRole(
+                        .requestMatchers("/app/v1/coordinators/**").hasAnyRole(
+                                Role.ADMINISTRATOR.name(),
+                                Role.SUPERUSER.name(),
+                                Role.COORDINATOR.name()
+                        )
+                        .requestMatchers("/app/v1/admins/**").hasAnyRole(
+                                Role.ADMINISTRATOR.name()
+                        )
+                        .requestMatchers("/app/v1/configuration/**").hasAnyRole(
                                 Role.ADMINISTRATOR.name(),
                                 Role.SUPERUSER.name()
                         )

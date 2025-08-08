@@ -4,6 +4,7 @@ import com.application.QueryGrid.io.Entity.Token.Token;
 import com.application.QueryGrid.io.Entity.Token.TokenType;
 import com.application.QueryGrid.io.Entity.User;
 import com.application.QueryGrid.io.Entity.UserAuth.Role;
+import com.application.QueryGrid.io.Repository.LicenseRepository;
 import com.application.QueryGrid.io.Repository.TokenRepository;
 import com.application.QueryGrid.io.Repository.UserRepository;
 import com.application.QueryGrid.io.dto.request.LoginRequest;
@@ -29,6 +30,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
+    private final LicenseRepository licenseRepository;
 
     public UserCreationResponse createUser(UserCreationRequest creationRequest){
         var user = User.builder()
@@ -38,7 +40,8 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(creationRequest.getPassword()))
                 .repositoryName(creationRequest.getRepositoryName())
                 .isActive(true)
-                .role(Role.SUPERUSER)
+                .role(Role.USER)
+                .isLicensed(licenseRepository.existsByAssignedUserEmail(creationRequest.getEmail()))
                 .build();
         if (userRepository.existsById(user.getEmail())){
             var response = "User exists already";
@@ -50,16 +53,20 @@ public class AuthenticationService {
     }
 
     public LoginResponse authenticateUser(LoginRequest loginRequest){
-        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        var user = userRepository.findByLoginName(loginRequest.getLoginName()).orElseThrow();
         if(
                 passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()) &&
                         (loginRequest.getRepositoryName()).equals(user.getRepositoryName()))
         {
+            if((!user.isLicensed() && licenseRepository.getLicenseByEmail(user.getEmail()).isEmpty())){
+                return LoginResponse.builder().token("No Token").message("Access denied: please verify your license status or contact your administrator.").build();
+            }
             var userToken = jwtService.generateToken(user);
             var message = "User Authenticated Successfully";
             revokeAllUserTokens(user);
             savedUserToken(user, userToken);
             return LoginResponse.builder().token(userToken).message(message).build();
+
         }else{
             return LoginResponse.builder().token("No Token").message("Invalid credentials").build();
         }

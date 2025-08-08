@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
-    private String repositoryName;
-    private String loginName;
-//    private String email;
-    private String password;
+public class LicenseAllocationRequest {
+    private String licenseName;
+    private String userEmail;
+    private String licenseType;
+    private String license_notes;
 }

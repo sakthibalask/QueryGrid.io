@@ -67,4 +67,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "userInfo")
     private List<Token> tokens;
+
+    private boolean isLicensed;
 }
