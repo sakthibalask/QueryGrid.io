@@ -2,7 +2,7 @@ package com.application.QueryGrid.io.Service.Configuration;
 
 import com.application.QueryGrid.io.Entity.Group.GroupRoles;
 import com.application.QueryGrid.io.Entity.Group.Groups;
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import com.application.QueryGrid.io.Repository.GroupRepository;
 import com.application.QueryGrid.io.Repository.UserRepository;
 import com.application.QueryGrid.io.Utils.PatchUtils;
