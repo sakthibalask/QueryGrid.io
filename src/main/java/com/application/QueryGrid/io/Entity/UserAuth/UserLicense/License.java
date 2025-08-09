@@ -1,6 +1,6 @@
 package com.application.QueryGrid.io.Entity.UserAuth.UserLicense;
 
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,14 +36,4 @@ public class License {
 
     @Column(columnDefinition = "TEXT")
     private String license_notes;
-
-
-
-
-
-
-
-
-
-
 }

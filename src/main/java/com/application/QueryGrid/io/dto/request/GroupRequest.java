@@ -1,7 +1,5 @@
 package com.application.QueryGrid.io.dto.request;
 
-import com.application.QueryGrid.io.Entity.Group.GroupRoles;
-import com.application.QueryGrid.io.Entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.application.QueryGrid.io.Entity.Group;
 
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

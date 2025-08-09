@@ -1,6 +1,6 @@
 package com.application.QueryGrid.io.Service.Configuration;
 
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import com.application.QueryGrid.io.Entity.UserAuth.Role;
 import com.application.QueryGrid.io.Entity.UserAuth.UserLicense.License;
 import com.application.QueryGrid.io.Entity.UserAuth.UserLicense.LicenseType;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

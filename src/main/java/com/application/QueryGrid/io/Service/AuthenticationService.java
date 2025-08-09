@@ -2,7 +2,7 @@ package com.application.QueryGrid.io.Service;
 
 import com.application.QueryGrid.io.Entity.Token.Token;
 import com.application.QueryGrid.io.Entity.Token.TokenType;
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import com.application.QueryGrid.io.Entity.UserAuth.Role;
 import com.application.QueryGrid.io.Repository.LicenseRepository;
 import com.application.QueryGrid.io.Repository.TokenRepository;

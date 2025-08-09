@@ -1,6 +1,6 @@
 package com.application.QueryGrid.io.Repository;
 
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

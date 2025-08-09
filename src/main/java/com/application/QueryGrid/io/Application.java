@@ -1,6 +1,6 @@
 package com.application.QueryGrid.io;
 
-import com.application.QueryGrid.io.Entity.User;
+import com.application.QueryGrid.io.Entity.UserAuth.User;
 import com.application.QueryGrid.io.Entity.UserAuth.Role;
 import com.application.QueryGrid.io.Entity.UserAuth.UserLicense.License;
 import com.application.QueryGrid.io.Entity.UserAuth.UserLicense.LicenseType;
