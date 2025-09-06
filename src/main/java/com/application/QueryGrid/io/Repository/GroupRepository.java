@@ -5,6 +5,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface GroupRepository extends JpaRepository<Groups, String> {
+import java.util.Optional;
+import java.util.Set;
 
+public interface GroupRepository extends JpaRepository<Groups, String> {
+    Set<Groups> findAllByGroupNameIn(Set<String> names);
+
+
+    @Query("""
+            SELECT g FROM Groups g
+            JOIN g.users u
+            WHERE u.email = :userEmail
+            """)
+    Optional<Groups> findByuserEmail(String userEmail);
 }

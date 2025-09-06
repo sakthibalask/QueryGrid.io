@@ -1,6 +1,5 @@
-package com.application.QueryGrid.io.dto.request;
+package com.application.QueryGrid.io.dto.request.UserAuth;
 
-import com.application.QueryGrid.io.Entity.UserAuth.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCreationRequest {
-    private String email;
-    private String username;
-    private String login_name;
+public class LoginRequest {
     private String repositoryName;
+    private String loginName;
+//    private String email;
     private String password;
 }

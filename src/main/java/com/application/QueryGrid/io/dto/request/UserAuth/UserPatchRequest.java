@@ -1,4 +1,4 @@
-package com.application.QueryGrid.io.dto.request;
+package com.application.QueryGrid.io.dto.request.UserAuth;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

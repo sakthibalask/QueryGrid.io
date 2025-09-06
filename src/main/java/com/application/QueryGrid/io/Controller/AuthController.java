@@ -1,11 +1,11 @@
 package com.application.QueryGrid.io.Controller;
 
 import com.application.QueryGrid.io.Service.AuthenticationService;
-import com.application.QueryGrid.io.dto.request.LoginRequest;
-import com.application.QueryGrid.io.dto.request.UserCreationRequest;
-import com.application.QueryGrid.io.dto.response.LoginResponse;
-import com.application.QueryGrid.io.dto.response.UserCreationResponse;
+import com.application.QueryGrid.io.dto.request.UserAuth.LoginRequest;
+import com.application.QueryGrid.io.dto.response.Auth.LoginResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthenticationService authService;
 
-    @PostMapping("/authenticateUser")
+    @PostMapping(value = "/authenticateUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LoginResponse loginResponse(
             @RequestBody LoginRequest loginRequest
     ){
