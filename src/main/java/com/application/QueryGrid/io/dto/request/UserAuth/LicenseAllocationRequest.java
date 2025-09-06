@@ -1,4 +1,4 @@
-package com.application.QueryGrid.io.dto.request;
+package com.application.QueryGrid.io.dto.request.UserAuth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

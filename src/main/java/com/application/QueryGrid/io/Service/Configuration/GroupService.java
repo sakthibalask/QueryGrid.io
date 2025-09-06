@@ -6,10 +6,10 @@ import com.application.QueryGrid.io.Entity.UserAuth.User;
 import com.application.QueryGrid.io.Repository.GroupRepository;
 import com.application.QueryGrid.io.Repository.UserRepository;
 import com.application.QueryGrid.io.Utils.PatchUtils;
-import com.application.QueryGrid.io.dto.request.GroupPatchRequest;
-import com.application.QueryGrid.io.dto.request.GroupRequest;
-import com.application.QueryGrid.io.dto.response.ReturnGroup;
-import com.application.QueryGrid.io.dto.response.ReturnGroups;
+import com.application.QueryGrid.io.dto.request.Groups.GroupPatchRequest;
+import com.application.QueryGrid.io.dto.request.Groups.GroupRequest;
+import com.application.QueryGrid.io.dto.response.Group.ReturnGroup;
+import com.application.QueryGrid.io.dto.response.Group.ReturnGroups;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +38,11 @@ public class GroupService {
         return selectedUsers;
     }
 
+    @Transactional
     public String createGroups(Principal connectedUser, GroupRequest groupRequest){
         var createdUser = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
         Groups newgroup = Groups.builder()
-                .group_name(groupRequest.getGroup_name())
+                .groupName(groupRequest.getGroup_name())
                 .description(groupRequest.getDescription())
                 .isLocked(false)
                 .createdBy(createdUser)
@@ -91,7 +92,7 @@ public class GroupService {
 
         return ReturnGroup.builder()
                 .group_name(groupName)
-                .groupRole(group.getGroup_name())
+                .groupRole(group.getGroupName())
                 .description(group.getDescription())
                 .user_emails(getUserEmails(group.getUsers()))
                 .build();
@@ -102,7 +103,7 @@ public class GroupService {
         List<Groups> groups = groupRepository.findAll();
 
         for(Groups group: groups){
-            allGroups.add(getGroupDetails(group.getGroup_name()));
+            allGroups.add(getGroupDetails(group.getGroupName()));
         }
 
         return ReturnGroups.builder()

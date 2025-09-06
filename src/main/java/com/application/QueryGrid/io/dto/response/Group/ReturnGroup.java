@@ -1,6 +1,5 @@
-package com.application.QueryGrid.io.dto.response;
+package com.application.QueryGrid.io.dto.response.Group;
 
-import com.application.QueryGrid.io.Entity.Group.Groups;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

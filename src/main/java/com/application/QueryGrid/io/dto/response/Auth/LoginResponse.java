@@ -1,4 +1,4 @@
-package com.application.QueryGrid.io.dto.response;
+package com.application.QueryGrid.io.dto.response.Auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCreationResponse {
+public class LoginResponse {
+    private String token;
     private String message;
 }

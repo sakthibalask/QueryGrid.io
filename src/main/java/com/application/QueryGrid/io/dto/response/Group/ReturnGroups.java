@@ -1,17 +1,16 @@
-package com.application.QueryGrid.io.dto.response;
-
+package com.application.QueryGrid.io.dto.response.Group;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReturnUsers {
-    private List<ReturnUser> users;
+public class ReturnGroups {
+    private Set<ReturnGroup> allGroups;
 }

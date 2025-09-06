@@ -1,11 +1,9 @@
 package com.application.QueryGrid.io.Entity.Group;
 
+import com.application.QueryGrid.io.Entity.Configs.DatabaseConfigs;
 import com.application.QueryGrid.io.Entity.UserAuth.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -17,8 +15,8 @@ import java.util.Set;
 @Table(name = "groups")
 public class Groups {
     @Id
-    @Column(nullable = false, unique = true)
-    private String group_name;
+    @Column(name = "group_name", nullable = false, unique = true)
+    private String groupName;
 
     @Column(length = 1024)
     private String description;
@@ -36,5 +34,10 @@ public class Groups {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "group_name")
     private Set<User> users;
+
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<DatabaseConfigs> db_configs;
+
 
 }

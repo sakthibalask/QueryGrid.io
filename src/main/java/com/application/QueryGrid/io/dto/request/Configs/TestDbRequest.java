@@ -1,4 +1,5 @@
-package com.application.QueryGrid.io.dto.request;
+package com.application.QueryGrid.io.dto.request.Configs;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
-    private String repositoryName;
-    private String loginName;
-//    private String email;
+public class TestDbRequest {
+    private String jdbcUrl;
+    private String username;
     private String password;
 }
