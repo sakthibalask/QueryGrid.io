@@ -147,7 +147,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.application.DeploymentApplication.DeploymentApplication</mainClass>
+							<mainClass>com.application.QueryGrid.io.Application</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
