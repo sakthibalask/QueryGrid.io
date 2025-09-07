@@ -12,7 +12,7 @@
 
 	<groupId>com.application</groupId>
 	<artifactId>QueryGrid.io</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>QueryGrid.io</name>
 	<description>A polyglot, multi-tenant SaaS platform that routes natural-language queries through a cached rule engine and LLM-powered SQL generator to securely serve real-time database insights at scale.</description>
 
