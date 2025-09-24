@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "qg_licenses")
+@Table(name = "qg_user_licenses")
 public class License {
     @Id
     private String license_name;
