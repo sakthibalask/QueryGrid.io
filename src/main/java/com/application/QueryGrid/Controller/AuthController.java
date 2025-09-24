@@ -20,8 +20,8 @@ public class AuthController {
         return authService.authenticateUser(loginRequest);
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/test-connection")
     public String getHello(){
-        return "Hello";
+        return "TestConnection successful";
     }
 }

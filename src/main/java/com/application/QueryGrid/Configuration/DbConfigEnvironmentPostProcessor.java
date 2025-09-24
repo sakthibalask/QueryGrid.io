@@ -20,6 +20,7 @@ public class DbConfigEnvironmentPostProcessor implements EnvironmentPostProcesso
     private static final String PROP_SOURCE_NAME = "externalJsonDbConfig";
     private static final String DB_CONFIG_PATH_PROP = "db.config.path";
     private static final String DEFAULT_JSON_PATH_WINDOWS = "C:\\Application\\product\\data\\dbconfig.json";
+//    private static final String DEFAULT_JSON_PATH_UNIX = ""
 
     private final ObjectMapper mapper = new ObjectMapper();
 
