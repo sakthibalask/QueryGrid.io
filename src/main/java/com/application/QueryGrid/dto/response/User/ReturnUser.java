@@ -16,6 +16,7 @@ public class ReturnUser {
     private String login_name;
     private String repositoryName;
     private Role role;
+    private boolean isLicensed;
     private boolean isActive;
 
 }

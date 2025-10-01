@@ -52,14 +52,7 @@ public class UserService {
 
     public ReturnUser getUser(String email){
         var user = userRepository.findByEmail(email).orElseThrow();
-        return ReturnUser.builder()
-                .email(user.getEmail())
-                .username(user.getUsername())
-                .login_name(user.getLogin_name())
-                .isActive(user.getIsActive())
-                .repositoryName(user.getRepositoryName())
-                .role(user.getRole())
-                .build();
+        return toDto(user);
     }
 
     public ReturnUsers getAllUsers(){
@@ -76,6 +69,7 @@ public class UserService {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .login_name(user.getLogin_name())
+                .isLicensed(user.isLicensed())
                 .isActive(user.getIsActive())
                 .repositoryName(user.getRepositoryName())
                 .role(user.getRole())

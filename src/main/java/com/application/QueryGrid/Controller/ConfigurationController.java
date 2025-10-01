@@ -59,7 +59,7 @@ public class ConfigurationController {
         return userService.patchUser(patchRequest);
     }
 
-    @GetMapping(value = "/getUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getUser", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
     public ReturnUser returnUser(
             @RequestParam String email
@@ -67,13 +67,13 @@ public class ConfigurationController {
         return userService.getUser(email);
     }
 
-    @GetMapping(value = "/getUsers", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getUsers", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
     public ReturnUsers returnUsers(){
         return userService.getAllUsers();
     }
 
-    @DeleteMapping(value = "/deleteUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/deleteUser", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('superuser:DELETE') or hasAuthority('admin:DELETE')")
     public String removeUser(
             @RequestParam String email
