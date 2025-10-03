@@ -13,11 +13,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthenticationService authService;
 
-    @PostMapping(value = "/authenticateUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public LoginResponse loginResponse(
+    @PostMapping(value = "/authenticateUser/config", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public LoginResponse loginResponseConfig(
             @RequestBody LoginRequest loginRequest
     ){
-        return authService.authenticateUser(loginRequest);
+        return authService.authenticateUser(loginRequest, "config");
+    }
+
+    @PostMapping(value = "/authenticateUser/client", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public LoginResponse loginResponseClient(
+            @RequestBody LoginRequest loginRequest
+    ){
+        return authService.authenticateUser(loginRequest, "client");
     }
 
     @GetMapping("/test-connection")

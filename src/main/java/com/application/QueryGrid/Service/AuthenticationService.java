@@ -52,7 +52,7 @@ public class AuthenticationService {
         return UserCreationResponse.builder().message(response).build();
     }
 
-    public LoginResponse authenticateUser(LoginRequest loginRequest){
+    public LoginResponse authenticateUser(LoginRequest loginRequest, String applicationType){
         var user = userRepository.findByLoginName(loginRequest.getLoginName()).orElseThrow();
         if(
                 passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()) &&
@@ -60,6 +60,9 @@ public class AuthenticationService {
         {
             if((!user.isLicensed() && licenseRepository.getLicenseByEmail(user.getEmail()).isEmpty())){
                 return LoginResponse.builder().token("No Token").message("Access denied: please verify your license status or contact your administrator.").build();
+            }
+            if(applicationType.equals("config") && !(user.getRole().toString().equals("ADMINISTRATOR") || user.getRole().toString().equals("SUPERUSER"))){
+                return LoginResponse.builder().token("No Token").message("Access denied: insufficient privileges for config application").build();
             }
             var userToken = jwtService.generateToken(user);
             var message = "User Authenticated Successfully";
