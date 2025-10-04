@@ -59,10 +59,10 @@ public class AuthenticationService {
                         (loginRequest.getRepositoryName()).equals(user.getRepositoryName()))
         {
             if((!user.isLicensed() && licenseRepository.getLicenseByEmail(user.getEmail()).isEmpty())){
-                return LoginResponse.builder().token("No Token").message("Access denied: please verify your license status or contact your administrator.").build();
+                return LoginResponse.builder().token("No Token").message("Please verify your license status or contact your administrator.").build();
             }
             if(applicationType.equals("config") && !(user.getRole().toString().equals("ADMINISTRATOR") || user.getRole().toString().equals("SUPERUSER"))){
-                return LoginResponse.builder().token("No Token").message("Access denied: insufficient privileges for config application").build();
+                return LoginResponse.builder().token("No Token").message("User has no access to this application").build();
             }
             var userToken = jwtService.generateToken(user);
             var message = "User Authenticated Successfully";
