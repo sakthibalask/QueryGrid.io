@@ -5,6 +5,7 @@ import com.application.QueryGrid.dto.request.UserAuth.LoginRequest;
 import com.application.QueryGrid.dto.response.Auth.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,12 @@ public class AuthController {
             @RequestBody LoginRequest loginRequest
     ){
         return authService.authenticateUser(loginRequest, "client");
+    }
+
+    @GetMapping(value = "/checkValid")
+    public ResponseEntity<Boolean> checkToken(@RequestParam String token) {
+        boolean valid = authService.istokenValid(token);
+        return ResponseEntity.ok(valid);
     }
 
     @GetMapping("/test-connection")

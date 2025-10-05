@@ -5,6 +5,7 @@ import com.application.QueryGrid.Service.Configuration.ConfigService;
 import com.application.QueryGrid.Service.Configuration.GroupService;
 import com.application.QueryGrid.Service.Configuration.UserService;
 import com.application.QueryGrid.dto.request.Configs.ConfigCreateRequest;
+import com.application.QueryGrid.dto.request.Configs.ConfigPatchRequest;
 import com.application.QueryGrid.dto.request.Groups.GroupPatchRequest;
 import com.application.QueryGrid.dto.request.Groups.GroupRequest;
 import com.application.QueryGrid.dto.request.UserAuth.LicenseAllocationRequest;
@@ -27,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.*;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("app/v1/configuration")
@@ -129,6 +132,12 @@ public class ConfigurationController {
 
     }
 
+    @GetMapping("/getGroupNames")
+    @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
+    public List<String> fetchGroupNames(){
+        return groupService.getGroupNames();
+    }
+
     /*
       Configuration Endpoints for Database configuration.
      */
@@ -152,9 +161,10 @@ public class ConfigurationController {
 
     @GetMapping("/getConfigsName")
     @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
-    public ReturnConfigNames getConfigNames(){
+    public Set<ReturnConfigNames> getConfigNames(){
         return configService.getConfigNames();
     }
+
 
     @PostMapping(value = "/upload/config", consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('superuser:CREATE') or hasAuthority('admin:CREATE')")
@@ -164,6 +174,14 @@ public class ConfigurationController {
         }
 
         return configService.importConfiguration(file);
+    }
+
+    @PatchMapping("/update/config")
+    @PreAuthorize("hasAuthority('superuser:UPDATE') or hasAuthority('admin:UPDATE')")
+    public String updateConfig(
+            @RequestBody ConfigPatchRequest patchRequest
+    ) throws Exception {
+     return configService.patchConfig(patchRequest);
     }
 
     @PostMapping("/save/config")

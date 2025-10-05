@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/app/v1/users/**").hasAnyRole(
                                 Role.ADMINISTRATOR.name(),
                                 Role.SUPERUSER.name(),
+                                Role.COORDINATOR.name(),
                                 Role.USER.name()
                         )
                         .requestMatchers("/app/v1/coordinators/**").hasAnyRole(

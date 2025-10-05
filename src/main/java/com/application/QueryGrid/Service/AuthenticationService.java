@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +76,14 @@ public class AuthenticationService {
         }
 
     }
+
+    public boolean istokenValid(String token) {
+        return tokenRepository.findByToken(token)
+                .filter(t -> !t.isExpired() && !t.isRevoked()) // must not be revoked or expired in DB
+                .map(t -> jwtService.isTokenValid(token, t.getUserInfo())) // validate JWT signature & expiration
+                .orElse(false); // return false if token not found or invalid
+    }
+
 
     private void revokeAllUserTokens(User user){
         var validUserToken = tokenRepository.findAllValidTokensByUser(user.getEmail());

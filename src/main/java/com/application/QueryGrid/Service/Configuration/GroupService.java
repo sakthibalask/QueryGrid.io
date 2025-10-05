@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,6 +110,17 @@ public class GroupService {
         return ReturnGroups.builder()
                 .allGroups(allGroups)
                 .build();
+    }
+
+    public List<String> getGroupNames() {
+        List<String> groupNames = new ArrayList<>();
+        List<Groups> groups = groupRepository.findAll();
+
+        for(Groups group: groups){
+            groupNames.add(group.getGroupName());
+        }
+
+        return groupNames;
     }
 
 

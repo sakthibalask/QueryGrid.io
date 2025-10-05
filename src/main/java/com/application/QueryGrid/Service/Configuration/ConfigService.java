@@ -26,9 +26,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -117,27 +115,52 @@ public class ConfigService {
                 .build();
     }
 
-    public ReturnConfigNames getConfigNames(){
-        Set<String> allConfigNames = configsRepository.findAll().stream().map(DatabaseConfigs::getConfigName).collect(Collectors.toSet());
-        return ReturnConfigNames.builder()
-                .configNames(allConfigNames)
-                .build();
 
+    public Set<ReturnConfigNames> getConfigNames(){
+        Set<ReturnConfigNames> configWithGroupNames = new HashSet<>();
+
+        List<DatabaseConfigs> allConfigs = configsRepository.findAll();
+
+        for(DatabaseConfigs config: allConfigs) {
+            List<String> groupNames = config.getGroups()
+                    .stream()
+                    .map(Groups::getGroupName)
+                    .toList();
+
+            ReturnConfigNames configDto = ReturnConfigNames.builder()
+                    .configName(config.getConfigName())
+                    .groupNames(groupNames)
+                    .build();
+
+            configWithGroupNames.add(configDto);
+        }
+
+        return configWithGroupNames;
     }
 
+
     @Transactional
-    public String patchConfig(
-            ConfigPatchRequest configPatchRequest
-    ) throws Exception{
-        DatabaseConfigs savedConfig = configsRepository.findByConfigName(configPatchRequest.getConfigName()).orElseThrow();
-        if(configPatchRequest.getPassword() != null){
+    public String patchConfig(ConfigPatchRequest configPatchRequest) throws Exception {
+        DatabaseConfigs savedConfig = configsRepository.findByConfigName(configPatchRequest.getConfigName())
+                .orElseThrow();
+
+        if (configPatchRequest.getPassword() != null) {
             savedConfig.setPassword(GeneralUtils.encrypt(configPatchRequest.getPassword()));
             configPatchRequest.setPassword(null);
         }
+
         PatchUtils.copyNonNullProperties(configPatchRequest, savedConfig);
+
+        if (configPatchRequest.getGroupNames() != null && !configPatchRequest.getGroupNames().isEmpty()) {
+            Set<Groups> newGroups = new HashSet<>(groupRepository.findAllById(configPatchRequest.getGroupNames()));
+            savedConfig.setGroups(newGroups);
+        }
+
         configsRepository.save(savedConfig);
+
         return "Database Configuration Updated Successfully";
     }
+
 
     @Transactional
     public ReturnConfigs getConfigsByGroupName(Principal connectedUser) throws  Exception{

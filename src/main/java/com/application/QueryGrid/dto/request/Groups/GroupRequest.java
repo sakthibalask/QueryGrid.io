@@ -1,5 +1,6 @@
 package com.application.QueryGrid.dto.request.Groups;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupRequest {
+    @JsonProperty("groupName")
     private String group_name;
     private String description;
     private String groupRole;
