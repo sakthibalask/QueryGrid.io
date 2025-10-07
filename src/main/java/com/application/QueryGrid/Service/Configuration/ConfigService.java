@@ -95,7 +95,7 @@ public class ConfigService {
                 .groups(mappedgroups)
                 .build();
         configsRepository.save(dbConfigs);
-        return "Database Configuration Saved Successful. Connection Message : " + connectionMsg;
+        return "Database Configuration Saved Successful. \nConnection Message : " + connectionMsg;
     }
 
     public ReturnConfig getConfig(String configName) throws Exception{
