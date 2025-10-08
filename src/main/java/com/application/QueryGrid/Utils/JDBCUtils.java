@@ -1,9 +1,7 @@
 package com.application.QueryGrid.Utils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Locale;
+import java.sql.*;
+import java.util.*;
 
 public class JDBCUtils {
 
@@ -15,6 +13,27 @@ public class JDBCUtils {
             // Return a connection confirmation ID (URL + hashCode)
             return String.format("ConnectionID-%d [%s]", conn.hashCode(), conn.getMetaData().getURL());
         }
+    }
+
+    public static List<Map<String, Object>> executeQuery(String jdbcUrl, String username, String password, String sqlQuery) throws SQLException{
+        List<Map<String, Object>> results = new ArrayList<>();
+
+        try(Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery)
+        ){
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for(int i=1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnLabel(i), rs.getObject(i));
+                }
+                results.add(row);
+            }
+        }
+        return results;
     }
 
 

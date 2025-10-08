@@ -184,6 +184,14 @@ public class ConfigurationController {
      return configService.patchConfig(patchRequest);
     }
 
+    @DeleteMapping("/delete/config")
+    @PreAuthorize("hasAuthority('superuser:DELETE') or hasAuthority('admin:DELETE')")
+    public String trashConfig(
+            @RequestParam String name
+    ) throws Exception{
+        return configService.deleteConfig(name);
+    }
+
     @PostMapping("/save/config")
     @PreAuthorize("hasAuthority('superuser:CREATE') or hasAuthority('admin:CREATE')")
     public String saveConfig(

@@ -12,6 +12,7 @@ import com.application.QueryGrid.Utils.PatchUtils;
 import com.application.QueryGrid.Utils.XmlParser;
 import com.application.QueryGrid.dto.request.Configs.ConfigCreateRequest;
 import com.application.QueryGrid.dto.request.Configs.ConfigPatchRequest;
+import com.application.QueryGrid.dto.request.Configs.RunQueryRequest;
 import com.application.QueryGrid.dto.request.Configs.TestDbRequest;
 import com.application.QueryGrid.dto.response.Configs.ReturnConfig;
 import com.application.QueryGrid.dto.response.Configs.ReturnConfigNames;
@@ -48,7 +49,6 @@ public class ConfigService {
 
         return connectionMsg;
     }
-
 
     public Set<Groups> getSelectedGroups(Set<String> group_names){
         Set<Groups> mappedgroups = Collections.emptySet();
@@ -181,7 +181,7 @@ public class ConfigService {
                                 .username(db.getUsername())
                                 .password(GeneralUtils.decrypt(db.getPassword()))
                                 .groupNames(db.getGroups().stream().map(Groups::getGroupName).collect(Collectors.toSet()))
-                                .connectionUrl(JDBCUtils.buildJdbcUrl(db.getDbType(), db.getHost(), db.getPort(), db.getDatabaseName()))
+                                .connectionUrl(JDBCUtils.buildJdbcUrl(db.getDbType(), db.getHost(), db.getPort() != 0 ? db.getPort() : null, db.getDatabaseName()))
                                 .build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -229,6 +229,42 @@ public class ConfigService {
         return configData.getBytes(StandardCharsets.UTF_8);
     }
 
+    @Transactional
+    public String deleteConfig(String configName) throws Exception{
+        DatabaseConfigs config = configsRepository.findByConfigName(configName)
+                .orElseThrow(() -> new RuntimeException("Config not found: " + configName));
+
+        Set<Groups> associatedGroups = config.getGroups();
+
+        if(associatedGroups != null && !associatedGroups.isEmpty()) {
+            for(Groups group: associatedGroups){
+                group.getDb_configs().remove(config);
+            }
+        }
+
+        config.getGroups().clear();
+
+        configsRepository.delete(config);
+
+        return "Database Configuration '\" + configName + \"' deleted successfully.";
+    }
+
+
+
+
+//    Query Executions
+    public List<Map<String, Object>> runQuery(RunQueryRequest runQueryRequest) throws SQLException{
+        try {
+            return JDBCUtils.executeQuery(
+                    runQueryRequest.getJdbcUrl(),
+                    runQueryRequest.getUsername(),
+                    runQueryRequest.getPassword(),
+                    runQueryRequest.getQuery()
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to execute query: " + e.getMessage(), e);
+        }
+    }
 
 
 
