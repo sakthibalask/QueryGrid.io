@@ -166,7 +166,7 @@ public class ConfigurationController {
     }
 
 
-    @PostMapping(value = "/upload/config", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/import/config", consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('superuser:CREATE') or hasAuthority('admin:CREATE')")
     public ReturnConfigs uploadConfig(@RequestParam("file")MultipartFile file)throws Exception {
         if(file == null || file.isEmpty()){
@@ -204,7 +204,14 @@ public class ConfigurationController {
         }
     }
 
+    @GetMapping("/preview/config")
+    @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
+    public ReturnConfigs previewConfig(){
+        return configService.previewConfigExport();
+    }
+
     @PostMapping(value = "/export/config", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('superuser:CREATE') or hasAuthority('admin:CREATE')")
     public ResponseEntity<ByteArrayResource> exportConfig(
             @RequestBody ReturnConfigs dto,
             Principal connectedUser

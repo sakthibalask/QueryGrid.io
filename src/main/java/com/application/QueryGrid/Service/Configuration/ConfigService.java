@@ -71,7 +71,7 @@ public class ConfigService {
         }
 
         TestDbRequest testDbRequest = TestDbRequest.builder()
-                .jdbcUrl(JDBCUtils.buildJdbcUrl(createRequest.getDbType(), createRequest.getHost(), createRequest.getPort(), createRequest.getDatabaseName()))
+                .jdbcUrl(JDBCUtils.buildJdbcUrl(createRequest.getDbType(), createRequest.getHost(), createRequest.getConfigType().equals("CLOUD") ? null : createRequest.getPort(), createRequest.getDatabaseName()))
                 .username(createRequest.getUsername())
                 .password(createRequest.getPassword())
                 .build();
@@ -161,6 +161,26 @@ public class ConfigService {
         return "Database Configuration Updated Successfully";
     }
 
+    @Transactional
+    public String deleteConfig(String configName) throws Exception{
+        DatabaseConfigs config = configsRepository.findByConfigName(configName)
+                .orElseThrow(() -> new RuntimeException("Config not found: " + configName));
+
+        Set<Groups> associatedGroups = config.getGroups();
+
+        if(associatedGroups != null && !associatedGroups.isEmpty()) {
+            for(Groups group: associatedGroups){
+                group.getDb_configs().remove(config);
+            }
+        }
+
+        config.getGroups().clear();
+
+        configsRepository.delete(config);
+
+        return "Database Configuration '\" + configName + \"' deleted successfully.";
+    }
+
 
     @Transactional
     public ReturnConfigs getConfigsByGroupName(Principal connectedUser) throws  Exception{
@@ -210,7 +230,7 @@ public class ConfigService {
                     .configName(imported.getConfigName())
                     .dbType(imported.getDbType())
                     .host(imported.getHost())
-                    .port(null)
+                    .port(imported.getConfigType().equals("CLOUD") ? 0: imported.getPort())
                     .databaseName(imported.getDatabaseName())
                     .username(imported.getUsername())
                     .password(imported.getPassword())
@@ -223,33 +243,36 @@ public class ConfigService {
 
     }
 
+    public ReturnConfigs previewConfigExport() {
+        List<DatabaseConfigs> allConfigs = configsRepository.findAll();
+        Set<ReturnConfig> currentUserConfigs = allConfigs.stream().map(
+                db -> {
+                        try {
+                            return ReturnConfig.builder()
+                                    .configName(db.getConfigName())
+                                    .dbType(db.getDbType())
+                                    .configType(db.getConfigTypes().name())
+                                    .host(db.getHost())
+                                    .port(db.getPort())
+                                    .databaseName(db.getDatabaseName())
+                                    .username(db.getUsername())
+                                    .password(GeneralUtils.decrypt(db.getPassword()))
+                                    .groupNames(db.getGroups().stream().map(Groups::getGroupName).collect(Collectors.toSet()))
+                                    .connectionUrl(JDBCUtils.buildJdbcUrl(db.getDbType(), db.getHost(), db.getPort() != 0 ? db.getPort() : null, db.getDatabaseName()))
+                                    .build();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+            ).collect(Collectors.toSet());
+
+        return ReturnConfigs.builder().databaseConfigs(currentUserConfigs).build();
+    }
 
     public <T> byte[] exportConfiguration(ReturnConfigs returnConfig) throws Exception{
         String configData = xmlParser.writeXml(returnConfig);
         return configData.getBytes(StandardCharsets.UTF_8);
     }
-
-    @Transactional
-    public String deleteConfig(String configName) throws Exception{
-        DatabaseConfigs config = configsRepository.findByConfigName(configName)
-                .orElseThrow(() -> new RuntimeException("Config not found: " + configName));
-
-        Set<Groups> associatedGroups = config.getGroups();
-
-        if(associatedGroups != null && !associatedGroups.isEmpty()) {
-            for(Groups group: associatedGroups){
-                group.getDb_configs().remove(config);
-            }
-        }
-
-        config.getGroups().clear();
-
-        configsRepository.delete(config);
-
-        return "Database Configuration '\" + configName + \"' deleted successfully.";
-    }
-
-
 
 
 //    Query Executions
