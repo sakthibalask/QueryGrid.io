@@ -76,6 +76,12 @@ public class ConfigurationController {
         return userService.getAllUsers();
     }
 
+    @GetMapping(value = "/getUsernames")
+    @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
+    public Set<String> returnUsernames(){
+        return userService.getUserNames();
+    }
+
     @DeleteMapping(value = "/deleteUser", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('superuser:DELETE') or hasAuthority('admin:DELETE')")
     public String removeUser(
@@ -91,6 +97,14 @@ public class ConfigurationController {
             @RequestBody LicenseAllocationRequest allocationRequest
     ){
         return userService.allocateLicense(connectedUser, allocationRequest);
+    }
+
+    @GetMapping("/getLicense")
+    @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
+    public String getUserLicense(
+            @RequestParam String useremail
+    ){
+        return userService.getLicense(useremail);
     }
 
 

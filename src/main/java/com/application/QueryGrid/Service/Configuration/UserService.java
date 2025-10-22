@@ -19,7 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +55,18 @@ public class UserService {
         return toDto(user);
     }
 
+    public Set<String> getUserNames(){
+        Set<String> userNames = new HashSet<>();
+
+        List<User> users = userRepository.findAll();
+
+        for(User user: users) {
+            userNames.add(user.getUsername());
+        }
+
+        return userNames;
+    }
+
     public ReturnUsers getAllUsers(){
         var users = userRepository.findAll().stream()
                 .map(this::toDto)
@@ -67,7 +79,7 @@ public class UserService {
     private ReturnUser toDto(User user){
         return ReturnUser.builder()
                 .email(user.getEmail())
-                .username(user.getUsername())
+                .username(user.getActualUsername())
                 .login_name(user.getLogin_name())
                 .isLicensed(user.isLicensed())
                 .isActive(user.getIsActive())
@@ -110,5 +122,12 @@ public class UserService {
 
         return "License Allocated Successful";
     }
+
+    public String getLicense(String useremail) {
+        Optional<License> userLicense = licenseRepository.getLicenseByEmail(useremail);
+        // Return the license key if present, otherwise null or empty
+        return userLicense.map(License::getLicense_key).orElse(null);
+    }
+
 
 }
