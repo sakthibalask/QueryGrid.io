@@ -10,7 +10,7 @@ public class UserPatchRequest {
     private String username;
     private String loginName;
     private String repositoryName;
-    private boolean isActive;
+    private String active;
     private String role;
     private String password;
 }

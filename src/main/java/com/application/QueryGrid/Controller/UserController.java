@@ -38,6 +38,13 @@ public class UserController {
         return configService.runQuery(queryRequest);
     }
 
+    @GetMapping("/accessedRecords")
+    public List<String> getAccessedRecords(
+            @RequestParam String configName
+    ){
+        return configService.accessedTables(configName);
+    }
+
 
 
 }

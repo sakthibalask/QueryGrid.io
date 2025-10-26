@@ -49,4 +49,7 @@ public class DatabaseConfigs {
     @ToString.Exclude
     private Set<Groups> groups;
 
+    @Column(name = "granted_records", columnDefinition = "text", nullable = true)
+    private String grantedRecords;
+
 }

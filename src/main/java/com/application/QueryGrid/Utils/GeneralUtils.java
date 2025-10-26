@@ -8,7 +8,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 public class GeneralUtils {
 
@@ -34,6 +37,20 @@ public class GeneralUtils {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedPassword)), StandardCharsets.UTF_8);
-
     }
+
+    public static String convertListToString(List<String> listData) {
+        if (listData == null || listData.isEmpty()) {
+            return "";
+        }
+        return String.join(",", listData);
+    }
+
+    public static List<String> convertStringToList(String stringData) {
+        if (stringData == null || stringData.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(stringData.split("\\s*,\\s*"));
+    }
+
 }

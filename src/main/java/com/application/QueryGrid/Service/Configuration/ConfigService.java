@@ -149,6 +149,10 @@ public class ConfigService {
             configPatchRequest.setPassword(null);
         }
 
+        if(configPatchRequest.getGrantedRecords() != null){
+            savedConfig.setGrantedRecords(GeneralUtils.convertListToString(configPatchRequest.getGrantedRecords()));
+        }
+
         PatchUtils.copyNonNullProperties(configPatchRequest, savedConfig);
 
         if (configPatchRequest.getGroupNames() != null && !configPatchRequest.getGroupNames().isEmpty()) {
@@ -180,6 +184,24 @@ public class ConfigService {
 
         return "Database Configuration '\" + configName + \"' deleted successfully.";
     }
+
+    @Transactional
+    public void deleteAllConfigs() throws Exception {
+        List<DatabaseConfigs> allConfigs = configsRepository.findAll();
+
+        for (DatabaseConfigs config : allConfigs) {
+            Set<Groups> associatedGroups = config.getGroups();
+            if (associatedGroups != null && !associatedGroups.isEmpty()) {
+                for (Groups group : associatedGroups) {
+                    group.getDb_configs().remove(config);
+                }
+            }
+            config.getGroups().clear();
+        }
+
+        configsRepository.deleteAll();
+    }
+
 
 
     @Transactional
@@ -224,13 +246,22 @@ public class ConfigService {
 
     }
 
-    public String saveConfiguration(ReturnConfigs importedConfigs) throws Exception{
-        for(ReturnConfig imported: importedConfigs.getDatabaseConfigs()){
+    @Transactional
+    public String saveConfiguration(boolean reset, ReturnConfigs importedConfigs) throws Exception {
+
+        // If reset is true, delete all existing configurations
+        if (reset) {
+            // deleteAll() will clear all configs, including group associations
+            deleteAllConfigs();
+        }
+
+        // Import new configurations
+        for (ReturnConfig imported : importedConfigs.getDatabaseConfigs()) {
             ConfigCreateRequest createRequest = ConfigCreateRequest.builder()
                     .configName(imported.getConfigName())
                     .dbType(imported.getDbType())
                     .host(imported.getHost())
-                    .port(imported.getConfigType().equals("CLOUD") ? 0: imported.getPort())
+                    .port(imported.getConfigType().equals("CLOUD") ? 0 : imported.getPort())
                     .databaseName(imported.getDatabaseName())
                     .username(imported.getUsername())
                     .password(imported.getPassword())
@@ -239,9 +270,10 @@ public class ConfigService {
                     .build();
             createConfig(createRequest);
         }
-        return "Database Configuration Imported Successfully";
 
+        return "Database Configuration Imported Successfully";
     }
+
 
     public ReturnConfigs previewConfigExport() {
         List<DatabaseConfigs> allConfigs = configsRepository.findAll();
@@ -272,6 +304,37 @@ public class ConfigService {
     public <T> byte[] exportConfiguration(ReturnConfigs returnConfig) throws Exception{
         String configData = xmlParser.writeXml(returnConfig);
         return configData.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public List<Map<String, Object>> fetchTables(String configName) throws Exception {
+        Optional<DatabaseConfigs> configData = configsRepository.findByConfigName(configName);
+
+        if(configData.isEmpty()){
+            return null;
+        }
+
+        DatabaseConfigs config = configData.get();
+
+        var queryRequest = RunQueryRequest.builder()
+                .jdbcUrl(JDBCUtils.buildJdbcUrl(config.getDbType(), config.getHost(), config.getConfigTypes().equals(ConfigTypes.CLOUD) ? null: config.getPort(), config.getDatabaseName()))
+                .username(config.getUsername())
+                .password(GeneralUtils.decrypt(config.getPassword()))
+                .query(JDBCUtils.preSQLSyntax(config.getDbType(), "show_tables"))
+                .build();
+
+        return runQuery(queryRequest);
+    }
+
+    public List<String> accessedTables(String configName) {
+        Optional<DatabaseConfigs> configData = configsRepository.findByConfigName(configName);
+        if(configData.isEmpty()){
+            return null;
+        }
+
+        DatabaseConfigs config = configData.get();
+
+        return GeneralUtils.convertStringToList(config.getGrantedRecords());
+
     }
 
 

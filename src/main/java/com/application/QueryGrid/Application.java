@@ -1,11 +1,15 @@
 package com.application.QueryGrid;
 
+import com.application.QueryGrid.Entity.Group.GroupRoles;
+import com.application.QueryGrid.Entity.Group.Groups;
 import com.application.QueryGrid.Entity.UserAuth.User;
 import com.application.QueryGrid.Entity.UserAuth.Role;
 import com.application.QueryGrid.Entity.UserAuth.UserLicense.License;
 import com.application.QueryGrid.Entity.UserAuth.UserLicense.LicenseType;
+import com.application.QueryGrid.Repository.GroupRepository;
 import com.application.QueryGrid.Repository.LicenseRepository;
 import com.application.QueryGrid.Repository.UserRepository;
+import com.application.QueryGrid.Service.Configuration.GroupService;
 import com.application.QueryGrid.Service.Configuration.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
@@ -14,6 +18,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Set;
+
 @SpringBootApplication
 @RequiredArgsConstructor
 public class Application {
@@ -21,6 +27,7 @@ public class Application {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final LicenseRepository licenseRepository;
+    private final GroupRepository groupRepository;
 	private final UserService userService;
 
 	public static void main(String[] args) {
@@ -45,6 +52,19 @@ public class Application {
 								.build();
 						return userRepository.save(adminUser);
 					});
+
+            groupRepository.findById("adminGroup")
+                            .orElseGet(() -> {
+                                var adminUser = userRepository.findByEmail("admin@qg.com").orElseThrow();
+                                Groups adminGroup = Groups.builder()
+                                        .groupName("adminGroup")
+                                        .description("A Default Admin Group")
+                                        .groupRole(GroupRoles.EXECUTOR)
+                                        .createdBy(adminUser)
+                                        .users(Set.of(adminUser))
+                                        .build();
+                                return groupRepository.save(adminGroup);
+                            });
 
 			licenseRepository.findById("adminLicense")
 					.orElseGet(() -> {

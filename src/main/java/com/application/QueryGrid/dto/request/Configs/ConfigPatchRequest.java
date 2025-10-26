@@ -3,6 +3,7 @@ package com.application.QueryGrid.dto.request.Configs;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,4 +18,5 @@ public class ConfigPatchRequest {
     private String password;
     private String configType;
     private Set<String> groupNames;
+    private List<String> grantedRecords;
 }

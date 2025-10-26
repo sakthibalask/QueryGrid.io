@@ -33,15 +33,22 @@ public class UserService {
     public String patchUser(UserPatchRequest userPatch){
         User user = userRepository.findByEmail(userPatch.getEmail()).orElseThrow();
 
-        if(userPatch.getRole() != null){
-            user.setRole(Role.valueOf(userPatch.getRole()));
+        if (userPatch.getRole() != null) {
+            user.setRole(Role.valueOf(userPatch.getRole().toUpperCase()));
         }
+
 
         if(userPatch.getPassword() != null){
             user.setPassword(passwordEncoder.encode(userPatch.getPassword()));
 
             userPatch.setPassword(null);
         }
+
+        if(userPatch.getActive() != null) {
+            user.setIsActive(Boolean.parseBoolean(userPatch.getActive()));
+        }
+
+
 
         PatchUtils.copyNonNullProperties(userPatch, user);
 

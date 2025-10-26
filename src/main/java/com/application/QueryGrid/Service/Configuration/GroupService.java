@@ -1,8 +1,10 @@
 package com.application.QueryGrid.Service.Configuration;
 
+import com.application.QueryGrid.Entity.Configs.DatabaseConfigs;
 import com.application.QueryGrid.Entity.Group.GroupRoles;
 import com.application.QueryGrid.Entity.Group.Groups;
 import com.application.QueryGrid.Entity.UserAuth.User;
+import com.application.QueryGrid.Repository.ConfigsRepository;
 import com.application.QueryGrid.Repository.GroupRepository;
 import com.application.QueryGrid.Repository.UserRepository;
 import com.application.QueryGrid.Utils.PatchUtils;
@@ -17,16 +19,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final ConfigsRepository configsRepository;
 
     public Set<User> getSelectedUsers(Set<String> user_emails){
         Set<User> selectedUsers = new HashSet<>(Set.of());
@@ -62,7 +62,7 @@ public class GroupService {
         Groups group = groupRepository.findById(groupPatchRequest.getGroupName()).orElseThrow();
 
         if(groupPatchRequest.getGroupRole() != null){
-            group.setGroupRole(GroupRoles.valueOf(groupPatchRequest.getGroupRole()));
+            group.setGroupRole(GroupRoles.valueOf(groupPatchRequest.getGroupRole().toUpperCase()));
         }
 
         if(groupPatchRequest.getUser_emails() != null){
@@ -93,7 +93,7 @@ public class GroupService {
 
         return ReturnGroup.builder()
                 .group_name(groupName)
-                .groupRole(group.getGroupName())
+                .groupRole(String.valueOf(group.getGroupRole()))
                 .description(group.getDescription())
                 .user_emails(getUserEmails(group.getUsers()))
                 .build();
@@ -121,6 +121,39 @@ public class GroupService {
         }
 
         return groupNames;
+    }
+
+    @Transactional
+    public void deleteGroup(String groupName) {
+        Optional<Groups> optionalGroup = groupRepository.findById(groupName);
+        if (optionalGroup.isEmpty()) {
+            return;
+        }
+
+        Groups group = optionalGroup.get();
+
+        try {
+            // 1️⃣ Unlink from all DatabaseConfigs (owning side of @ManyToMany)
+            Set<DatabaseConfigs> dbConfigs = group.getDb_configs();
+            if (dbConfigs != null && !dbConfigs.isEmpty()) {
+                for (DatabaseConfigs config : dbConfigs) {
+                    config.getGroups().remove(group); // unlink group from config
+                }
+                dbConfigs.clear(); // clear group side to avoid stale refs
+            }
+
+            // 2️⃣ Remove any users if linked (if applicable in your schema)
+            if (group.getUsers() != null) {
+                group.getUsers().clear();
+            }
+
+            // 3️⃣ Finally, delete the group
+            groupRepository.delete(group);
+
+
+        } catch (Exception e) {
+            // rollback handled by @Transactional
+        }
     }
 
 

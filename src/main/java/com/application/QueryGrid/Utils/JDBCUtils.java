@@ -94,4 +94,37 @@ public class JDBCUtils {
                     throw new IllegalArgumentException("Unsupported dbType: " + dbType + ". Add URL pattern for your DB.");
         };
     }
+
+    public static String preSQLSyntax(String dbType, String requiredType) {
+        if (dbType == null || requiredType == null)
+            throw new IllegalArgumentException("dbType and requiredType must not be null");
+
+        String upperDb = dbType.strip().toUpperCase(Locale.ROOT);
+        String upperReq = requiredType.strip().toUpperCase(Locale.ROOT);
+
+        if (!upperReq.equals("SELECT_TABLE") && !upperReq.equals("SHOW_TABLES")) {
+            throw new IllegalArgumentException("preSQLSyntax currently supports only 'SHOW TABLES'");
+        }
+
+        return switch (upperDb) {
+            case "MYSQL", "MYSQL8", "AURORA_MYSQL", "GCP_MYSQL" ->
+                    "SHOW TABLES;";
+
+            case "POSTGRESQL", "POSTGRES", "AURORA_POSTGRES", "GCP_POSTGRES" ->
+                    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';";
+
+            case "MSSQL", "SQLSERVER" ->
+                    "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";
+
+            case "ORACLE", "ORACLE_THIN" ->
+                    "SELECT table_name FROM user_tables;";
+
+            case "MONGODB" ->
+                    "-- MongoDB is not SQL-based. Use db.getCollectionNames();";
+
+            default ->
+                    throw new IllegalArgumentException("Unsupported DB type for 'SHOW TABLES': " + dbType);
+        };
+    }
+
 }

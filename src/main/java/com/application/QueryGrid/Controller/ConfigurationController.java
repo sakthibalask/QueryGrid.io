@@ -29,6 +29,7 @@ import org.springframework.http.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -131,6 +132,14 @@ public class ConfigurationController {
 
     }
 
+    @DeleteMapping("/deleteGroup")
+    @PreAuthorize("hasAuthority('superuser:DELETE') or hasAuthority('admin:DELETE')")
+    public void deleteGroupData(
+            @RequestParam String groupName
+    ){
+        groupService.deleteGroup(groupName);
+    }
+
     @GetMapping("/getGroup")
     @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
     public ReturnGroup getGroup(
@@ -209,14 +218,16 @@ public class ConfigurationController {
     @PostMapping("/save/config")
     @PreAuthorize("hasAuthority('superuser:CREATE') or hasAuthority('admin:CREATE')")
     public String saveConfig(
+            @RequestParam(defaultValue = "false") boolean reset,
             @RequestBody ReturnConfigs previewConfigs
-    ) throws  Exception{
-        try{
-            return configService.saveConfiguration(previewConfigs);
-        }catch (Exception e){
-            throw new Exception("Uploaded configuration cannot be saved due to "+ e.getMessage(), e);
+    ) throws Exception {
+        try {
+            return configService.saveConfiguration(reset, previewConfigs);
+        } catch (Exception e) {
+            throw new Exception("Uploaded configuration cannot be saved due to " + e.getMessage(), e);
         }
     }
+
 
     @GetMapping("/preview/config")
     @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
@@ -248,7 +259,12 @@ public class ConfigurationController {
         }
     }
 
-
-
+    @GetMapping("/fetchTables")
+    @PreAuthorize("hasAuthority('superuser:READ') or hasAuthority('admin:READ')")
+    public List<Map<String, Object>> getTables (
+            @RequestParam String configName
+    )throws Exception{
+        return configService.fetchTables(configName);
+    }
 
 }
